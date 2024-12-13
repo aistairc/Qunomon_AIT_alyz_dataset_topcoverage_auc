@@ -1,0 +1,146 @@
+{
+  "name": "alyz_dataset_topcoverage_auc",
+  "description": "データの分布（物体の面積比率、平均明度、物体の中心座標の原点からの距離）のデータ密度が高い領域から考えて、密度p%の領域の面積をSとする。pの値を0から1に変化させたときの面積Sの変化を確認することでデータの均一性を判断する。",
+  "source_repository": "https://github.com/aistairc/Qunomon_AIT_alyz_dataset_topcoverage_auc",
+  "version": "1.0",
+  "quality": "https://ait-hub.pj.aist.go.jp/ait-hub/api/0.0.1/qualityDimensions/機械学習品質マネジメントガイドライン第三版/B-2データセットの均一性",
+  "keywords": [
+    "AUC",
+    "TopCoverage",
+    "image"
+  ],
+  "references": [],
+  "licenses": [
+    "Apache License Version 2.0"
+  ],
+  "inventories": [
+    {
+      "name": "train_dataset",
+      "type": "dataset",
+      "description": "HDF5形式の学習画像データセット。内部は2つのHDF5ファイルを用意する(ファイル名は任意)\n(1)モデルに入力される[-1,1]に正規化されている多次元配列を含むデータセット(データセット(1)の要素数はmodelの入力層の要素数と一致)\n(2)データの各サンプルの正解ラベル（クラスのインデックス値）を含むデータセット(データセット(2)の要素数はmodelの出力層の要素数と一致))\nファイル構造:\n sample.h5\n   ├(1)入力データセット\n   └(2)ラベルデータセット\n",
+      "requirement": {
+        "format": [
+          "h5"
+        ]
+      }
+    },
+    {
+      "name": "test_dataset",
+      "type": "dataset",
+      "description": "HDF5形式のテストデータセット。内部は2つのHDF5ファイルを用意する(ファイル名は任意)\n(1)モデルに入力される[-1,1]に正規化されている多次元配列を含むデータセット(データセット(1)の要素数はmodelの入力層の要素数と一致)\n(2)データの各サンプルの正解ラベル（クラスのインデックス値）を含むデータセット(データセット(2)の要素数はmodelの出力層の要素数と一致))\nファイル構造:\n sample.h5\n   ├(1)入力データセット\n   └(2)ラベルデータセット\n",
+      "requirement": {
+        "format": [
+          "h5"
+        ]
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "name": "train_input_dataset_name",
+      "type": "str",
+      "description": "train_dataset inventoryで説明されているデータセット(1)の名前",
+      "default_val": "x_train"
+    },
+    {
+      "name": "train_label_dataset_name",
+      "type": "str",
+      "description": "train_dataset inventoryで説明されているデータセット(2)の名前",
+      "default_val": "y_train"
+    },
+    {
+      "name": "test_input_dataset_name",
+      "type": "str",
+      "description": "test_dataset inventoryで説明されているデータセット(1)の名前",
+      "default_val": "x_test"
+    },
+    {
+      "name": "test_label_dataset_name",
+      "type": "str",
+      "description": "test_dataset inventoryで説明されているデータセット(2)の名前",
+      "default_val": "y_test"
+    },
+    {
+      "name": "kde_bandwidth",
+      "type": "float",
+      "description": "データの分布を計算するときのカーネル密度推定に指定するバンド幅",
+      "default_val": "0.5",
+      "min": "0.1",
+      "max": "1"
+    },
+    {
+      "name": "dataset_channel",
+      "type": "int",
+      "description": "train_dataset inventoryで説明されているデータセットとtest_dataset inventoryで説明されているデータセットのチャネル数",
+      "default_val": ""
+    }
+  ],
+  "report": {
+    "measures": [
+      {
+        "name": "train_Area_Topcoverage_AUC",
+        "type": "float",
+        "description": "学習用データセットの各クラスごとの面積比率のTopcoverageのAUC.値が1に近いほどデータが均一である",
+        "structure": "sequence"
+      },
+      {
+        "name": "train_Brightness_Topcoverage_AUC",
+        "type": "float",
+        "description": "学習用データセットの各クラスごとの平均明度のTopcoverageのAUC.値が1に近いほどデータが均一である",
+        "structure": "sequence"
+      },
+      {
+        "name": "train_Center_Topcoverage_AUC",
+        "type": "float",
+        "description": "学習用データセットの各クラスごとの中心座標のTopcoverageのAUC.値が1に近いほどデータが均一である",
+        "structure": "sequence"
+      },
+      {
+        "name": "test_Area_Topcoverage_AUC",
+        "type": "float",
+        "description": "テスト用データセットの各クラスごとの面積比率のTopcoverageのAUC.値が1に近いほどデータが均一である",
+        "structure": "sequence"
+      },
+      {
+        "name": "test_Brightness_Topcoverage_AUC",
+        "type": "float",
+        "description": "テスト用データセットの各クラスごとの平均明度のTopcoverageのAUC.値が1に近いほどデータが均一である",
+        "structure": "sequence"
+      },
+      {
+        "name": "test_Center_Topcoverage_AUC",
+        "type": "float",
+        "description": "テスト用データセットの各クラスごとの中心座標のTopcoverageのAUC.値が1に近いほどデータが均一である",
+        "structure": "sequence"
+      }
+    ],
+    "resources": [
+      {
+        "name": "train_Top_p_coverage_Plot",
+        "type": "picture",
+        "description": "学習用データセットの密度プロット（物体の面積比率、平均明度、物体の中心座標の原点からの距離）の曲線のプロット"
+      },
+      {
+        "name": "test_Top_p_coverage_Plot",
+        "type": "picture",
+        "description": "テスト用データセットの密度プロット（物体の面積比率、平均明度、物体の中心座標の原点からの距離）の曲線のプロット"
+      },
+      {
+        "name": "train_distribution_table",
+        "type": "table",
+        "description": "学習用データセットの面積比率、平均明度、物体の中心座標の原点からの距離の分布表"
+      },
+      {
+        "name": "test_distribution_table",
+        "type": "table",
+        "description": "テスト用データセットの面積比率、平均明度、物体の中心座標の原点からの距離の分布表"
+      }
+    ]
+  },
+  "downloads": [
+    {
+      "name": "Log",
+      "description": "AIT実行ログ"
+    }
+  ]
+}
