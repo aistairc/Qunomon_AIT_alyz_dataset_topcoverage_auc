@@ -71,7 +71,7 @@
     {
       "name": "dataset_channel",
       "type": "int",
-      "description": "train_dataset inventoryで説明されているデータセットとtest_dataset inventoryで説明されているデータセットのチャネル数",
+      "description": "train_dataset inventoryで説明されているデータセットとtest_dataset inventoryで説明されているデータセットのチャネル数(グレースケール画像の場合1、RGB画像の場合3)",
       "default_val": ""
     }
   ],
@@ -90,7 +90,7 @@
         "structure": "sequence"
       },
       {
-        "name": "train_Center_Topcoverage_AUC",
+        "name": "train_Center_Coordinates_Topcoverage_AUC",
         "type": "float",
         "description": "学習用データセットの各クラスごとの中心座標のTopcoverageのAUC.値が1に近いほどデータが均一である",
         "structure": "sequence"
@@ -108,7 +108,7 @@
         "structure": "sequence"
       },
       {
-        "name": "test_Center_Topcoverage_AUC",
+        "name": "test_Center_Coordinates_Topcoverage_AUC",
         "type": "float",
         "description": "テスト用データセットの各クラスごとの中心座標のTopcoverageのAUC.値が1に近いほどデータが均一である",
         "structure": "sequence"

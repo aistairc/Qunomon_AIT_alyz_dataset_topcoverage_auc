@@ -38,7 +38,7 @@
 
 # [uneditable]
 
-# In[ ]:
+# In[1]:
 
 
 # Determine whether to start AIT or jupyter by startup argument
@@ -201,7 +201,7 @@ if not is_ait_launch:
                                             description='データの分布を計算するときのカーネル密度推定に指定するバンド幅')
     manifest_genenerator.add_ait_parameters(name='dataset_channel',
                                             type_='int',
-                                            description='train_dataset inventoryで説明されているデータセットとtest_dataset inventoryで説明されているデータセットのチャネル数')
+                                            description='train_dataset inventoryで説明されているデータセットとtest_dataset inventoryで説明されているデータセットのチャネル数(グレースケール画像の場合1、RGB画像の場合3)')
     #### Measures
     manifest_genenerator.add_ait_measures(name='train_Area_Topcoverage_AUC',
                                           type_='float',
@@ -211,7 +211,7 @@ if not is_ait_launch:
                                           type_='float',
                                           structure='sequence',
                                           description='学習用データセットの各クラスごとの平均明度のTopcoverageのAUC.値が1に近いほどデータが均一である')
-    manifest_genenerator.add_ait_measures(name='train_Center_Topcoverage_AUC',
+    manifest_genenerator.add_ait_measures(name='train_Center_Coordinates_Topcoverage_AUC',
                                           type_='float',
                                           structure='sequence',
                                           description='学習用データセットの各クラスごとの中心座標のTopcoverageのAUC.値が1に近いほどデータが均一である')
@@ -223,7 +223,7 @@ if not is_ait_launch:
                                           type_='float',
                                           structure='sequence',
                                           description='テスト用データセットの各クラスごとの平均明度のTopcoverageのAUC.値が1に近いほどデータが均一である')
-    manifest_genenerator.add_ait_measures(name='test_Center_Topcoverage_AUC',
+    manifest_genenerator.add_ait_measures(name='test_Center_Coordinates_Topcoverage_AUC',
                                           type_='float',
                                           structure='sequence',
                                           description='テスト用データセットの各クラスごとの中心座標のTopcoverageのAUC.値が1に近いほどデータが均一である')
@@ -411,7 +411,7 @@ def analyze_and_display(image_tensor, image_name, contour_data_list, area_ratio_
             'label': label,  # ラベル
             'center_x': data['center_x'],
             'center_y': data['center_y'],
-            'distance': data['distance'],
+            'center_distance': data['distance'],
             'area_ratio': data['area_ratio'],
             'brightness_ave': data['brightness_ave']
         })
@@ -517,7 +517,7 @@ def plot_TPCoverage_AUC_train(feature, kde_bandwidth=0.5, dataset_type="train", 
     plt.plot(p_values, areas, label=f"Area for {feature_name} Range")
     plt.xlabel(f"{feature_name} Percentile p (%)")
     plt.ylabel("Area (Number of Pixels)")
-    plt.title(f" TPCoverage - {dataset_type} Dataset, Label {label}")
+    plt.title(f" {feature_name} _TPCoverage - {dataset_type} Dataset, Label {label}")
     plt.grid(True)
     plt.savefig(file_path)
     plt.show()
@@ -553,7 +553,7 @@ def plot_TPCoverage_AUC_test(feature, kde_bandwidth=0.5, dataset_type="train", l
     plt.plot(p_values, areas, label=f"Area for {feature_name} Range")
     plt.xlabel(f"{feature_name} Percentile p (%)")
     plt.ylabel("Area (Number of Pixels)")
-    plt.title(f" TPCoverage - {dataset_type} Dataset, Label {label}")
+    plt.title(f" {feature_name} _TPCoverage - {dataset_type} Dataset, Label {label}")
     plt.grid(True)
     plt.savefig(file_path)
     plt.show()
@@ -579,10 +579,10 @@ def AUC_output_train_Brightness(auc_list):
 @measures(ait_output, 'test_Brightness_Topcoverage_AUC', is_many = True)
 def AUC_output_test_Brightness(auc_list):
     return np.array(auc_list)
-@measures(ait_output, 'train_Center_Topcoverage_AUC', is_many = True)
+@measures(ait_output, 'train_Center_Coordinates_Topcoverage_AUC', is_many = True)
 def AUC_output_train_Center(auc_list):
     return np.array(auc_list)
-@measures(ait_output, 'test_Center_Topcoverage_AUC', is_many = True)
+@measures(ait_output, 'test_Center_Coordinates_Topcoverage_AUC', is_many = True)
 def AUC_output_test_Center(auc_list):
     return np.array(auc_list)
 
@@ -638,7 +638,7 @@ def main() -> None:
     # 出力
     train_area_auc_list = []
     for label, feature in train_area_ratio.items():
-        _,total_area = plot_TPCoverage_AUC_train(feature, kde_bandwidth=kde_bandwidth, dataset_type="train", label=label, feature_name = "area_")
+        _,total_area = plot_TPCoverage_AUC_train(feature, kde_bandwidth=kde_bandwidth, dataset_type="train", label=label, feature_name = "Area")
         train_area_auc_list.append((label, total_area))
     train_area_auc_list_sorted = sorted(train_area_auc_list, key=lambda x: x[0])
     sorted_train_area_auc = [area for _, area in train_area_auc_list_sorted]
@@ -646,7 +646,7 @@ def main() -> None:
 
     test_area_auc_list = []
     for label, feature in test_area_ratio.items():
-        _,total_area = plot_TPCoverage_AUC_test(feature, kde_bandwidth=kde_bandwidth, dataset_type="test", label=label, feature_name = "area")
+        _,total_area = plot_TPCoverage_AUC_test(feature, kde_bandwidth=kde_bandwidth, dataset_type="test", label=label, feature_name = "Area")
         test_area_auc_list.append((label, total_area))
     test_area_auc_list_sorted = sorted(test_area_auc_list, key=lambda x: x[0])
     sorted_test_area_auc = [area for _, area in test_area_auc_list_sorted]
@@ -654,34 +654,34 @@ def main() -> None:
     
     train_brightness_auc_list = []    
     for label, feature in train_brightness_ave.items():
-        _,total_area = plot_TPCoverage_AUC_train(feature, kde_bandwidth=kde_bandwidth, dataset_type="train", label=label, feature_name = "brightness")
+        _,total_area = plot_TPCoverage_AUC_train(feature, kde_bandwidth=kde_bandwidth, dataset_type="train", label=label, feature_name = "Brightness")
         train_brightness_auc_list.append((label, total_area))
     train_brightness_auc_list_sorted = sorted(test_area_auc_list, key=lambda x: x[0])
     sorted_train_brightness_auc = [area for _, area in train_brightness_auc_list_sorted]
-    AUC_output_test_Area(sorted_train_brightness_auc)
+    AUC_output_train_Brightness(sorted_train_brightness_auc)
     test_brightness_auc_list = []
     for label, feature in test_brightness_ave.items():
-        _,total_area = plot_TPCoverage_AUC_test(feature, kde_bandwidth=kde_bandwidth, dataset_type="test", label=label, feature_name = "brightness")
+        _,total_area = plot_TPCoverage_AUC_test(feature, kde_bandwidth=kde_bandwidth, dataset_type="test", label=label, feature_name = "Brightness")
         test_brightness_auc_list.append((label, total_area))
     test_brightness_auc_list_sorted = sorted(test_brightness_auc_list, key=lambda x: x[0])
     sorted_test_brightness_auc = [area for _, area in test_brightness_auc_list_sorted]
-    AUC_output_train_Area(sorted_test_brightness_auc)
+    AUC_output_test_Brightness(sorted_test_brightness_auc)
         
     train_center_auc_list = []    
     for label, feature in train_distance.items():
-        _,total_area = plot_TPCoverage_AUC_train(feature, kde_bandwidth=kde_bandwidth, dataset_type="train", label=label, feature_name = "center")
+        _,total_area = plot_TPCoverage_AUC_train(feature, kde_bandwidth=kde_bandwidth, dataset_type="train", label=label, feature_name = "Center_Coordinates")
         train_center_auc_list.append((label, total_area))
     train_center_auc_list_sorted = sorted(train_center_auc_list, key=lambda x: x[0])
     sorted_train_center_auc = [area for _, area in train_center_auc_list_sorted]
-    AUC_output_train_Area(sorted_train_center_auc)
+    AUC_output_train_Center(sorted_train_center_auc)
 
     test_center_auc_list = [] 
     for label, feature in test_distance.items():
-        _,total_area = plot_TPCoverage_AUC_test(feature, kde_bandwidth=kde_bandwidth, dataset_type="test", label=label, feature_name = "center")
+        _,total_area = plot_TPCoverage_AUC_test(feature, kde_bandwidth=kde_bandwidth, dataset_type="test", label=label, feature_name = "Center_Coordinates")
         test_center_auc_list.append((label, total_area))
     test_center_auc_list_sorted = sorted(test_center_auc_list, key=lambda x: x[0])
     sorted_test_center_auc = [area for _, area in test_center_auc_list_sorted]
-    AUC_output_train_Area(sorted_test_center_auc)
+    AUC_output_test_Center(sorted_test_center_auc)
 
        
 
