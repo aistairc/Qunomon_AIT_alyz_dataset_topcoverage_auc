@@ -89,7 +89,7 @@ if not is_ait_launch:
 
 
 if not is_ait_launch:
-    requirements_generator.add_package('pandas', '2.2.3')
+    requirements_generator.add_package('pandas','2.2.3')
     requirements_generator.add_package('numpy','1.26.4')
     requirements_generator.add_package('torch','2.5.1')
     requirements_generator.add_package('h5py','3.12.1')
@@ -158,7 +158,7 @@ if not is_ait_launch:
     from ait_sdk.common.files.ait_manifest_generator import AITManifestGenerator
     manifest_genenerator = AITManifestGenerator(current_dir)
     manifest_genenerator.set_ait_name('alyz_dataset_topcoverage_auc')
-    manifest_genenerator.set_ait_description('データの分布（物体の面積比率、平均明度、物体の中心座標の原点からの距離）のデータ密度が高い領域から考えて、密度p%の領域の面積をSとする。pの値を0から1に変化させたときの面積Sの変化を確認することでデータの均一性を判断する。')
+    manifest_genenerator.set_ait_description('画像データセットにおける物体の面積比率、平均明度、および物体の中心座標の原点からの距離のそれぞれの分布のデータ密度が高い領域から考えて、上位p%の領域の面積をSとする。pの値を0から1に変化させたときの面積Sの変化を確認することでデータの均一性を判断する。')
     manifest_genenerator.set_ait_source_repository('https://github.com/aistairc/Qunomon_AIT_alyz_dataset_topcoverage_auc')
     manifest_genenerator.set_ait_version('1.0')
     manifest_genenerator.add_ait_licenses('Apache License Version 2.0')
@@ -170,11 +170,11 @@ if not is_ait_launch:
     inventory_requirement_dataset = manifest_genenerator.format_ait_inventory_requirement(format_=['h5'])
     manifest_genenerator.add_ait_inventories(name='train_dataset', 
                                              type_='dataset', 
-                                             description='HDF5形式の学習画像データセット。内部は2つのHDF5ファイルを用意する(ファイル名は任意)\n(1)モデルに入力される[-1,1]に正規化されている多次元配列を含むデータセット(データセット(1)の要素数はmodelの入力層の要素数と一致)\n(2)データの各サンプルの正解ラベル（クラスのインデックス値）を含むデータセット(データセット(2)の要素数はmodelの出力層の要素数と一致))\nファイル構造:\n sample.h5\n   ├(1)入力データセット\n   └(2)ラベルデータセット\n', 
+                                             description='HDF5形式の学習用の画像データセット。内部は2つのHDF5ファイルを用意する(ファイル名は任意)\n(1)モデルに入力される[-1,1]に正規化されている多次元配列を含むデータセット(データセット(1)の要素数はmodelの入力層の要素数と一致)\n(2)データの各サンプルの正解ラベル（クラスのインデックス値）を含むデータセット(データセット(2)の要素数はmodelの出力層の要素数と一致))\nファイル構造:\n sample.h5\n   ├(1)入力データセット\n   └(2)ラベルデータセット\n', 
                                              requirement= inventory_requirement_dataset)
     manifest_genenerator.add_ait_inventories(name='test_dataset', 
                                              type_='dataset', 
-                                             description='HDF5形式のテストデータセット。内部は2つのHDF5ファイルを用意する(ファイル名は任意)\n(1)モデルに入力される[-1,1]に正規化されている多次元配列を含むデータセット(データセット(1)の要素数はmodelの入力層の要素数と一致)\n(2)データの各サンプルの正解ラベル（クラスのインデックス値）を含むデータセット(データセット(2)の要素数はmodelの出力層の要素数と一致))\nファイル構造:\n sample.h5\n   ├(1)入力データセット\n   └(2)ラベルデータセット\n', 
+                                             description='HDF5形式のテスト用の画像データセット。内部は2つのHDF5ファイルを用意する(ファイル名は任意)\n(1)モデルに入力される[-1,1]に正規化されている多次元配列を含むデータセット(データセット(1)の要素数はmodelの入力層の要素数と一致)\n(2)データの各サンプルの正解ラベル（クラスのインデックス値）を含むデータセット(データセット(2)の要素数はmodelの出力層の要素数と一致))\nファイル構造:\n sample.h5\n   ├(1)入力データセット\n   └(2)ラベルデータセット\n', 
                                              requirement= inventory_requirement_dataset)
     #### Parameters
     manifest_genenerator.add_ait_parameters(name='train_input_dataset_name', 
@@ -214,7 +214,7 @@ if not is_ait_launch:
     manifest_genenerator.add_ait_measures(name='train_Center_Coordinates_Topcoverage_AUC',
                                           type_='float',
                                           structure='sequence',
-                                          description='学習用データセットの各クラスごとの中心座標のTopcoverageのAUC.値が1に近いほどデータが均一である')
+                                          description='学習用データセットの各クラスごとの中心座標の原点からの距離のTopcoverageのAUC.値が1に近いほどデータが均一である')
     manifest_genenerator.add_ait_measures(name='test_Area_Topcoverage_AUC',
                                           type_='float',
                                           structure='sequence',
@@ -226,7 +226,7 @@ if not is_ait_launch:
     manifest_genenerator.add_ait_measures(name='test_Center_Coordinates_Topcoverage_AUC',
                                           type_='float',
                                           structure='sequence',
-                                          description='テスト用データセットの各クラスごとの中心座標のTopcoverageのAUC.値が1に近いほどデータが均一である')
+                                          description='テスト用データセットの各クラスごとの中心座標の原点からの距離のTopcoverageのAUC.値が1に近いほどデータが均一である')
     #### Resources
     manifest_genenerator.add_ait_resources(name='train_Top_p_coverage_Plot',
                                           type_='picture', 
@@ -431,137 +431,120 @@ def analyze_and_display(image_tensor, image_name, contour_data_list, area_ratio_
             distance_by_label[label] = []
         distance_by_label[label].append(data['distance'])      
 
-@resources(ait_output, path_helper, 'train_distribution_table')
+@resources(ait_output, path_helper, 'train_distribution_table','train_distribution_table.csv')
 def save_contour_data_to_csv_train(contour_data_list, dataset_type="train", file_path: str=None):
     # pandasのDataFrameに変換
-    df = pd.DataFrame(contour_data_list)
-    
-    # CSVとして保存
-    filename = dataset_type + "_distribution_table"
-    file_path = file_path + filename
+    df = pd.DataFrame(contour_data_list)    
     
     df.to_csv(file_path, index=False)
-    print(f"Data saved to {filename}")
+    print(f"Data saved to train_distribution_table")
+    return df
     
-@resources(ait_output, path_helper, 'test_distribution_table')
+@resources(ait_output, path_helper, 'test_distribution_table','test_distribution_table.csv')
 def save_contour_data_to_csv_test(contour_data_list, dataset_type="train", file_path: str=None):
     # pandasのDataFrameに変換
     df = pd.DataFrame(contour_data_list)
-    
-    # CSVとして保存
-    filename = dataset_type + "_distribution_table"
-    file_path = file_path + filename
-    
+        
     df.to_csv(file_path, index=False)
-    print(f"Data saved to {filename}")
+    print(f"Data saved to test_distribution_table")
+    return df
 
 
 # In[14]:
 
 
-#TOPCoverage算出
 def calculate_area(feature, peak_feature, p, kde):
     """
     密度最大の特徴量を基準に、p%の範囲に対応する面積を計算します。
     """
-    # p%に対応する範囲の幅を計算
-    range_width = peak_feature * (p / 100) / 2  
-    
-    # 特徴量の範囲を設定（前後±range_width）
+    range_width = peak_feature * (p / 100) / 2  # p%に対応する範囲の幅を計算
     lower_bound = peak_feature - range_width
     upper_bound = peak_feature + range_width
     
-    # 範囲内のx値を作成
     x_values = np.linspace(lower_bound, upper_bound, 1000)
-    
-    # KDEを使ってその範囲の密度を計算
     density_values = kde(x_values)
-    
-    # その範囲内での密度の積分（面積）
-    area = np.trapz(density_values, x_values)
+    area = np.trapz(density_values, x_values)  # 密度の積分（面積）
     
     return area
 
-# 特徴量（feature）のリストを集め、ラベルごとにTPCoverageを計算する関数
-@resources(ait_output, path_helper, 'train_Top_p_coverage_Plot')
-def plot_TPCoverage_AUC_train(feature, kde_bandwidth=0.5, dataset_type="train", label=None, feature_name="brightness", file_path: str=None):
+def calculate_tpc_coverage(feature, kde_bandwidth=0.5):
     """
-    p%の範囲（前後5%）に対応する面積の変化を計算し、プロットする。
-    dataset_type: "train" または "test" を指定
-    label: クラス（ラベル）名を指定
+    特徴量に基づいてTPCoverage（面積）を計算します。
     """
     feature = np.asarray(feature).flatten()  # 1次元配列にフラット化
-    # カーネル密度推定を計算
     kde = gaussian_kde(feature, bw_method=kde_bandwidth)
-    
-    # 特徴量の範囲を取得
-    min_feature = np.min(feature)
-    max_feature = np.max(feature)
-    x_values = np.linspace(min_feature, max_feature, 1000)
-    y_values = kde(x_values)
     
     # 最も密度が高い点（ピーク）を求める
-    peak_density_index = np.argmax(y_values)
-    peak_feature = x_values[peak_density_index]
-    
-    # pを0から100まで変化させたときの面積を計算
-    p_values = np.linspace(1, 100, 100)  # p=1% から 100% まで
-    areas = []
-    
-    for p in p_values:
-        area = calculate_area(feature, peak_feature, p, kde)  # kdeを渡す
-        areas.append(area)    
-    # 面積の変化をプロット
-    filename = feature_name + "_" + dataset_type + "class" +str(label) + ".png"
-    file_path = file_path + filename
-    plt.plot(p_values, areas, label=f"Area for {feature_name} Range")
-    plt.xlabel(f"{feature_name} Percentile p (%)")
-    plt.ylabel("Area (Number of Pixels)")
-    plt.title(f" {feature_name} _TPCoverage - {dataset_type} Dataset, Label {label}")
-    plt.grid(True)
-    plt.savefig(file_path)
-    plt.show()
-     
-    # プロット全体の面積（曲線の下の面積）を計算
-    total_area = np.trapz(areas, (p_values / 100))
-    print(f"AUC: {total_area}")
-    
-    return file_path , total_area
-
-@resources(ait_output, path_helper, 'test_Top_p_coverage_Plot')
-def plot_TPCoverage_AUC_test(feature, kde_bandwidth=0.5, dataset_type="train", label=None, feature_name="brightness", file_path: str=None):
-    feature = np.asarray(feature).flatten()
-    kde = gaussian_kde(feature, bw_method=kde_bandwidth)
-    
     min_feature = np.min(feature)
     max_feature = np.max(feature)
     x_values = np.linspace(min_feature, max_feature, 1000)
     y_values = kde(x_values)
-    
     peak_density_index = np.argmax(y_values)
     peak_feature = x_values[peak_density_index]
     
+    # pを1%から100%まで変化させ、面積を計算
     p_values = np.linspace(1, 100, 100)
     areas = []
-    
     for p in p_values:
-        area = calculate_area(feature, peak_feature, p, kde) 
-        areas.append(area)    
-        
-    filename = feature_name + "_" + dataset_type + "class" +str(label) + ".png"
+        area = calculate_area(feature, peak_feature, p, kde)  # kdeを渡す
+        areas.append(area)
+    
+    return p_values, areas
+
+@resources(ait_output, path_helper, 'train_Top_p_coverage_Plot')
+def plot_tpc_coverage_for_label_train(feature, kde_bandwidth=0.5, dataset_type="train", label=None, feature_name="brightness", file_path=None):
+    """
+    ラベルごとにTPCoverageを計算し、プロットを作成してfile_pathを返す関数
+    """
+    # TPCoverageの計算
+    p_values, areas = calculate_tpc_coverage(feature, kde_bandwidth)
+    
+    # プロットの作成
+    filename = f"{feature_name}_{dataset_type}_class{label}.png"
     file_path = file_path + filename
+    
+    plt.figure() 
     plt.plot(p_values, areas, label=f"Area for {feature_name} Range")
     plt.xlabel(f"{feature_name} Percentile p (%)")
     plt.ylabel("Area (Number of Pixels)")
-    plt.title(f" {feature_name} _TPCoverage - {dataset_type} Dataset, Label {label}")
+    plt.title(f"{feature_name}_TPCoverage - {dataset_type} Dataset, Label {label}")
     plt.grid(True)
     plt.savefig(file_path)
     plt.show()
-     
+    
+    return file_path
+
+@resources(ait_output, path_helper, 'test_Top_p_coverage_Plot')
+def plot_tpc_coverage_for_label_test(feature, kde_bandwidth=0.5, dataset_type="train", label=None, feature_name="brightness", file_path=None):
+    """
+    ラベルごとにTPCoverageを計算し、プロットを作成してfile_pathを返す関数
+    """
+    # TPCoverageの計算
+    p_values, areas = calculate_tpc_coverage(feature, kde_bandwidth)
+    
+    # プロットの作成
+    filename = f"{feature_name}_{dataset_type}_class{label}.png"
+    file_path = file_path + filename
+    
+    plt.figure() 
+    plt.plot(p_values, areas, label=f"Area for {feature_name} Range")
+    plt.xlabel(f"{feature_name} Percentile p (%)")
+    plt.ylabel("Area (Number of Pixels)")
+    plt.title(f"{feature_name}_TPCoverage - {dataset_type} Dataset, Label {label}")
+    plt.grid(True)
+    plt.savefig(file_path)
+    plt.show()
+    
+    return file_path
+
+def calculate_total_area_for_label(feature, kde_bandwidth=0.5):
+    """
+    TPCoverageのAUC（曲線下の面積）を計算する関数
+    """
+    p_values, areas = calculate_tpc_coverage(feature, kde_bandwidth)
     total_area = np.trapz(areas, (p_values / 100))
     print(f"AUC: {total_area}")
-    
-    return file_path , total_area 
+    return total_area
 
 
 # In[15]:
@@ -587,11 +570,20 @@ def AUC_output_test_Center(auc_list):
     return np.array(auc_list)
 
 
+# In[16]:
+
+
+@log(logger)
+@downloads(ait_output, path_helper, 'Log', 'ait.log')
+def move_log(file_path: str=None) -> str:
+    shutil.move(get_log_path(), file_path)
+
+
 # ### #9 Main Algorithms
 
 # [required]
 
-# In[16]:
+# In[17]:
 
 
 @log(logger)
@@ -635,10 +627,11 @@ def main() -> None:
     train_dataset.close()
     test_dataset.close()
     
-    # 出力
     train_area_auc_list = []
     for label, feature in train_area_ratio.items():
-        _,total_area = plot_TPCoverage_AUC_train(feature, kde_bandwidth=kde_bandwidth, dataset_type="train", label=label, feature_name = "Area")
+        file_path = plot_tpc_coverage_for_label_train(
+            feature, kde_bandwidth=kde_bandwidth, dataset_type="train", label=label, feature_name="Area") 
+        total_area = calculate_total_area_for_label(feature, kde_bandwidth=kde_bandwidth)
         train_area_auc_list.append((label, total_area))
     train_area_auc_list_sorted = sorted(train_area_auc_list, key=lambda x: x[0])
     sorted_train_area_auc = [area for _, area in train_area_auc_list_sorted]
@@ -646,44 +639,55 @@ def main() -> None:
 
     test_area_auc_list = []
     for label, feature in test_area_ratio.items():
-        _,total_area = plot_TPCoverage_AUC_test(feature, kde_bandwidth=kde_bandwidth, dataset_type="test", label=label, feature_name = "Area")
+        file_path = plot_tpc_coverage_for_label_test(
+            feature, kde_bandwidth=kde_bandwidth, dataset_type="test", label=label, feature_name="Area") 
+        total_area = calculate_total_area_for_label(feature, kde_bandwidth=kde_bandwidth)
         test_area_auc_list.append((label, total_area))
     test_area_auc_list_sorted = sorted(test_area_auc_list, key=lambda x: x[0])
     sorted_test_area_auc = [area for _, area in test_area_auc_list_sorted]
     AUC_output_test_Area(sorted_test_area_auc)
     
-    train_brightness_auc_list = []    
+    train_brightness_auc_list = []
     for label, feature in train_brightness_ave.items():
-        _,total_area = plot_TPCoverage_AUC_train(feature, kde_bandwidth=kde_bandwidth, dataset_type="train", label=label, feature_name = "Brightness")
+        file_path = plot_tpc_coverage_for_label_train(
+            feature, kde_bandwidth=kde_bandwidth, dataset_type="train", label=label, feature_name="Brightness") 
+        total_area = calculate_total_area_for_label(feature, kde_bandwidth=kde_bandwidth)
         train_brightness_auc_list.append((label, total_area))
-    train_brightness_auc_list_sorted = sorted(test_area_auc_list, key=lambda x: x[0])
+    train_brightness_auc_list_sorted = sorted(train_brightness_auc_list, key=lambda x: x[0])
     sorted_train_brightness_auc = [area for _, area in train_brightness_auc_list_sorted]
     AUC_output_train_Brightness(sorted_train_brightness_auc)
+
     test_brightness_auc_list = []
     for label, feature in test_brightness_ave.items():
-        _,total_area = plot_TPCoverage_AUC_test(feature, kde_bandwidth=kde_bandwidth, dataset_type="test", label=label, feature_name = "Brightness")
+        file_path = plot_tpc_coverage_for_label_test(
+            feature, kde_bandwidth=kde_bandwidth, dataset_type="test", label=label, feature_name="Brightness") 
+        total_area = calculate_total_area_for_label(feature, kde_bandwidth=kde_bandwidth)
         test_brightness_auc_list.append((label, total_area))
     test_brightness_auc_list_sorted = sorted(test_brightness_auc_list, key=lambda x: x[0])
     sorted_test_brightness_auc = [area for _, area in test_brightness_auc_list_sorted]
     AUC_output_test_Brightness(sorted_test_brightness_auc)
-        
-    train_center_auc_list = []    
+
+    train_center_auc_list = []
     for label, feature in train_distance.items():
-        _,total_area = plot_TPCoverage_AUC_train(feature, kde_bandwidth=kde_bandwidth, dataset_type="train", label=label, feature_name = "Center_Coordinates")
+        file_path = plot_tpc_coverage_for_label_train(
+            feature, kde_bandwidth=kde_bandwidth, dataset_type="train", label=label, feature_name="Center_Coordinates") 
+        total_area = calculate_total_area_for_label(feature, kde_bandwidth=kde_bandwidth)
         train_center_auc_list.append((label, total_area))
     train_center_auc_list_sorted = sorted(train_center_auc_list, key=lambda x: x[0])
     sorted_train_center_auc = [area for _, area in train_center_auc_list_sorted]
     AUC_output_train_Center(sorted_train_center_auc)
 
-    test_center_auc_list = [] 
+    test_center_auc_list = []
     for label, feature in test_distance.items():
-        _,total_area = plot_TPCoverage_AUC_test(feature, kde_bandwidth=kde_bandwidth, dataset_type="test", label=label, feature_name = "Center_Coordinates")
+        file_path = plot_tpc_coverage_for_label_test(
+            feature, kde_bandwidth=kde_bandwidth, dataset_type="test", label=label, feature_name="Center_Coordinates") 
+        total_area = calculate_total_area_for_label(feature, kde_bandwidth=kde_bandwidth)
         test_center_auc_list.append((label, total_area))
     test_center_auc_list_sorted = sorted(test_center_auc_list, key=lambda x: x[0])
     sorted_test_center_auc = [area for _, area in test_center_auc_list_sorted]
     AUC_output_test_Center(sorted_test_center_auc)
 
-       
+    move_log()
 
 
 # ### #10 Entry point
