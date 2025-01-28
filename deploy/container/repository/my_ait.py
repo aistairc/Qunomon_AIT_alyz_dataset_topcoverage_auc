@@ -38,7 +38,7 @@
 
 # [uneditable]
 
-# In[ ]:
+# In[1]:
 
 
 # Determine whether to start AIT or jupyter by startup argument
@@ -100,7 +100,7 @@ if not is_ait_launch:
 
 # #### #3-3 [uneditable]
 
-# In[5]:
+# In[ ]:
 
 
 if not is_ait_launch:
@@ -114,7 +114,7 @@ if not is_ait_launch:
 
 # #### #4-1 [required]
 
-# In[6]:
+# In[ ]:
 
 
 # import if you need modules cell
@@ -133,7 +133,7 @@ from scipy.integrate import simpson
 
 # #### #4-2 [uneditable]
 
-# In[7]:
+# In[ ]:
 
 
 # must use modules
@@ -152,7 +152,7 @@ from ait_sdk.develop.annotation import measures, resources, downloads, ait_main 
 
 # [required]
 
-# In[8]:
+# In[ ]:
 
 
 if not is_ait_launch:
@@ -287,7 +287,7 @@ if not is_ait_launch:
 
 # [required]
 
-# In[9]:
+# In[ ]:
 
 
 if not is_ait_launch:
@@ -315,7 +315,7 @@ if not is_ait_launch:
 
 # [uneditable]
 
-# In[10]:
+# In[ ]:
 
 
 logger = get_logger()
@@ -345,7 +345,7 @@ ait_manifest.read_json(path_helper.get_manifest_file_path())
 
 # [required]
 
-# In[11]:
+# In[ ]:
 
 
 #@log(logger)
@@ -372,7 +372,7 @@ class h5_dataset(Dataset):
         self.h5_file.close()
 
 
-# In[12]:
+# In[ ]:
 
 
 # 画像テンソルを受け取り、特徴量を算出するクラス
@@ -437,7 +437,7 @@ class ContourAnalyzer:
         return contour_data
 
 
-# In[13]:
+# In[ ]:
 
 
 def analyze_and_display(image_tensor, image_name, contour_data_list, area_ratio_by_label, brightness_ave_by_label, distance_by_label, label):
@@ -492,7 +492,7 @@ def save_contour_data_to_csv_test(contour_data_list, dataset_type="train", file_
     return df
 
 
-# In[14]:
+# In[ ]:
 
 
 def calculate_area(feature, peak_feature, p, kde):
@@ -589,7 +589,7 @@ def calculate_total_area_for_label(feature, kde_bandwidth=0.5):
     return total_area
 
 
-# In[15]:
+# In[ ]:
 
 
 @measures(ait_output, 'train_Area_Topcoverage_AUC', is_many = True)
@@ -612,7 +612,7 @@ def AUC_output_test_Center(auc_list):
     return np.array(auc_list)
 
 
-# In[16]:
+# In[ ]:
 
 
 @log(logger)
@@ -687,9 +687,10 @@ def calculate_csv_tpcoverage_auc(csv_data,target_columns_list,by_column,label_li
     return auc_dict, min_value_dict, max_value_dict
 
 
-# In[17]:
+# In[ ]:
 
 
+@log(logger)
 def calculate_tpcoverage_variation_and_auc(column_data,kde_bandwidth):
     """
     KDEを行い、データの分布を出して、TPCoverageの変化とそのAUCを計算する関数。
@@ -710,7 +711,7 @@ def calculate_tpcoverage_variation_and_auc(column_data,kde_bandwidth):
     return auc, areas
 
 
-# In[18]:
+# In[ ]:
 
 
 @log(logger)
@@ -775,7 +776,7 @@ def plot_csv_test_tpcoverage(areas_dict,label_list,column_name,by_column,min_val
     return file_path
 
 
-# In[19]:
+# In[ ]:
 
 
 @log(logger)
@@ -798,7 +799,7 @@ def calculate_tpcoverage(p,x_range,density,peak_x):
     return area
 
 
-# In[20]:
+# In[ ]:
 
 
 @log(logger)
@@ -828,7 +829,7 @@ def output_measure_test_auc(auc_dict,columns_list,label_list):
     return np.array(auc_list)
 
 
-# In[21]:
+# In[ ]:
 
 
 @log(logger)
@@ -892,7 +893,7 @@ def test_tpcoverage_auc_table(auc_dict,columns_list,label_list,by_column,min_val
     return file_path
 
 
-# In[22]:
+# In[ ]:
 
 
 @log(logger)
@@ -905,7 +906,7 @@ def move_log(file_path: str=None) -> str:
 
 # [required]
 
-# In[23]:
+# In[ ]:
 
 
 @log(logger)
@@ -915,8 +916,8 @@ def main() -> None:
     test_path = ait_input.get_inventory_path('test_dataset')
     kde_bandwidth = ait_input.get_method_param_value('kde_bandwidth')
     #拡張子の取得
-    train_filename, train_ext = os.path.splitext(train_path)
-    test_filename, test_ext = os.path.splitext(test_path)
+    train_filename, train_ext = path.splitext(train_path)
+    test_filename, test_ext = path.splitext(test_path)
     #訓練データとテストデータの拡張子が同じであるか判定
     if train_ext != test_ext:
         raise ValueError(f"File extensions do not match:'{train_filename}{train_ext}' and '{test_filename}{test_ext}'")
@@ -1054,7 +1055,7 @@ def main() -> None:
 
 # [uneditable]
 
-# In[24]:
+# In[ ]:
 
 
 if __name__ == '__main__':
@@ -1065,7 +1066,7 @@ if __name__ == '__main__':
 
 # [required]
 
-# In[25]:
+# In[ ]:
 
 
 ait_owner='AIST'
@@ -1076,7 +1077,7 @@ ait_creation_year='2024'
 
 # [uneditable] 
 
-# In[26]:
+# In[ ]:
 
 
 if not is_ait_launch:
