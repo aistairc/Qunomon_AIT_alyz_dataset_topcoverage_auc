@@ -38,7 +38,7 @@
 
 # [uneditable]
 
-# In[1]:
+# In[ ]:
 
 
 # Determine whether to start AIT or jupyter by startup argument
@@ -100,7 +100,7 @@ if not is_ait_launch:
 
 # #### #3-3 [uneditable]
 
-# In[ ]:
+# In[5]:
 
 
 if not is_ait_launch:
@@ -114,7 +114,7 @@ if not is_ait_launch:
 
 # #### #4-1 [required]
 
-# In[ ]:
+# In[6]:
 
 
 # import if you need modules cell
@@ -133,7 +133,7 @@ from scipy.integrate import simpson
 
 # #### #4-2 [uneditable]
 
-# In[ ]:
+# In[7]:
 
 
 # must use modules
@@ -152,7 +152,7 @@ from ait_sdk.develop.annotation import measures, resources, downloads, ait_main 
 
 # [required]
 
-# In[ ]:
+# In[8]:
 
 
 if not is_ait_launch:
@@ -214,7 +214,8 @@ if not is_ait_launch:
     manifest_genenerator.add_ait_parameters(name='num_group',
                                             type_='int',
                                             default_val='5',
-                                            description='テーブルデータセットの評価を行う場合、入力された数だけ組分けを行う。')
+                                            description='テーブルデータセットの評価を行う場合、入力された数だけ組分けを行う。',
+                                           depends_on_parameter='group_column')
 
     #### Measures
     manifest_genenerator.add_ait_measures(name='train_Area_Topcoverage_AUC',
@@ -286,20 +287,24 @@ if not is_ait_launch:
 
 # [required]
 
-# In[ ]:
+# In[9]:
 
 
 if not is_ait_launch:
     from ait_sdk.common.files.ait_input_generator import AITInputGenerator
     input_generator = AITInputGenerator(manifest_path)
+    #input_generator.add_ait_inventories(name='train_dataset',
+    #                                    value='mnist_data/aug_train.h5')
+    #input_generator.add_ait_inventories(name='test_dataset',
+    #                                    value='mnist_data/aug_test.h5')
+    #input_generator.set_ait_params("train_input_dataset_name", "train_image")
+    #input_generator.set_ait_params("train_label_dataset_name", "train_label")
+    #input_generator.set_ait_params("test_input_dataset_name", "test_image")
+    #input_generator.set_ait_params("test_label_dataset_name", "test_label")
     input_generator.add_ait_inventories(name='train_dataset',
                                         value='house_price/train_categorical_housing.csv')
     input_generator.add_ait_inventories(name='test_dataset',
                                         value='house_price/test_categorical_housing.csv')
-    input_generator.set_ait_params("train_input_dataset_name", "train_image")
-    input_generator.set_ait_params("train_label_dataset_name", "train_label")
-    input_generator.set_ait_params("test_input_dataset_name", "test_image")
-    input_generator.set_ait_params("test_label_dataset_name", "test_label")
     input_generator.set_ait_params("target_columns", "total_bedrooms,population,households,median_income")
     input_generator.set_ait_params("group_column", "housing_median_age")
     input_generator.set_ait_params("num_group", "4")
@@ -310,7 +315,7 @@ if not is_ait_launch:
 
 # [uneditable]
 
-# In[ ]:
+# In[10]:
 
 
 logger = get_logger()
@@ -340,7 +345,7 @@ ait_manifest.read_json(path_helper.get_manifest_file_path())
 
 # [required]
 
-# In[ ]:
+# In[11]:
 
 
 #@log(logger)
@@ -367,7 +372,7 @@ class h5_dataset(Dataset):
         self.h5_file.close()
 
 
-# In[ ]:
+# In[12]:
 
 
 # 画像テンソルを受け取り、特徴量を算出するクラス
@@ -432,7 +437,7 @@ class ContourAnalyzer:
         return contour_data
 
 
-# In[ ]:
+# In[13]:
 
 
 def analyze_and_display(image_tensor, image_name, contour_data_list, area_ratio_by_label, brightness_ave_by_label, distance_by_label, label):
@@ -487,7 +492,7 @@ def save_contour_data_to_csv_test(contour_data_list, dataset_type="train", file_
     return df
 
 
-# In[ ]:
+# In[14]:
 
 
 def calculate_area(feature, peak_feature, p, kde):
@@ -584,7 +589,7 @@ def calculate_total_area_for_label(feature, kde_bandwidth=0.5):
     return total_area
 
 
-# In[ ]:
+# In[15]:
 
 
 @measures(ait_output, 'train_Area_Topcoverage_AUC', is_many = True)
@@ -607,7 +612,7 @@ def AUC_output_test_Center(auc_list):
     return np.array(auc_list)
 
 
-# In[ ]:
+# In[16]:
 
 
 @log(logger)
@@ -629,32 +634,25 @@ def calculate_csv_tpcoverage_auc(csv_data,target_columns_list,by_column,label_li
                 min_value = csv_data[csv_data["group"]==label][by_column].min()
                 max_value = csv_data[csv_data["group"]==label][by_column].max()
                 if len(column_data)>1:
-                    #KDEの設定
-                    kde = gaussian_kde(column_data, bw_method=kde_bandwidth)
-                    #範囲の設定
-                    x_range = np.linspace(column_data.min(),column_data.max(),1000)
-                    #密度を計算
-                    density = kde(x_range)
-                    #もっとも密度が高い場所の設定
-                    peak_x = x_range[np.argmax(density)]
-                    p_values = np.linspace(0,1,100)
-                    #TPCoverageの変化をリストに保存
-                    areas = [calculate_tpcoverage(p,x_range,density,peak_x) for p in p_values]
-                    #TPCoverageの変化曲線のAUCを計算
-                    auc = simpson(y=areas,x=p_values)
+                    #TPCoverageの変化とそのAUCを計算
+                    auc, areas = calculate_tpcoverage_variation_and_auc(column_data,kde_bandwidth)
                     #列名をkey、その列のTPCoverage AUCをvalueに入れる
                     dict_key = column+"_"+str(label)
                     auc_dict[dict_key]=auc
                     areas_dict[dict_key]=areas
                     min_value_dict[dict_key]=min_value
                     max_value_dict[dict_key]=max_value
-                    #AUCの表示とプロットの表示
-                    if dataset_type=="train":
-                        print(f"TPCoverage AUC of train data {column} by {by_column}（{min_value} ～ {max_value}）:{auc}")
-                    else:
-                        print(f"TPCoverage AUC of test data {column} by {by_column}（{min_value} ～ {max_value}）:{auc}")
                 else:
-                    print(f"no data {by_column}（{min_value} ～ {max_value}")
+                    #列名をkey、その列のTPCoverage AUCをvalueに入れる
+                    dict_key = column+"_"+str(label)
+                    auc = 0
+                    auc_dict[dict_key]=auc
+                    areas_dict[dict_key]=[0]*100
+                #AUCの表示とプロットの表示
+                if dataset_type=="train":
+                    print(f"TPCoverage AUC of train data {column} by {by_column}（{min_value} ～ {max_value}）:{auc}")
+                else:
+                    print(f"TPCoverage AUC of test data {column} by {by_column}（{min_value} ～ {max_value}）:{auc}")
             if dataset_type=="train":
                 plot_csv_train_tpcoverage(areas_dict,label_list,column,by_column,min_value_dict=min_value_dict,max_value_dict=max_value_dict)
             else:
@@ -665,50 +663,54 @@ def calculate_csv_tpcoverage_auc(csv_data,target_columns_list,by_column,label_li
                 #列から欠損値を除外して値を取り出す
                 column_data = csv_data[csv_data["group"]==label][column].dropna()
                 if len(column_data)>1:
-                    #KDEの設定
-                    kde = gaussian_kde(column_data, bw_method=kde_bandwidth)
-                    #範囲の設定
-                    x_range = np.linspace(column_data.min(),column_data.max(),1000)
-                    #密度を計算
-                    density = kde(x_range)
-                    #もっとも密度が高い場所の設定
-                    peak_x = x_range[np.argmax(density)]
-                    p_values = np.linspace(0,1,100)
-                    #TPCoverageの変化をリストに保存
-                    areas = [calculate_tpcoverage(p,x_range,density,peak_x) for p in p_values]
-                    #TPCoverageの変化曲線のAUCを計算
-                    auc = simpson(y=areas,x=p_values)
+                    #TPCoverageの変化とそのAUCを計算
+                    auc, areas = calculate_tpcoverage_variation_and_auc(column_data,kde_bandwidth)
                     #列名をkey、その列のTPCoverage AUCをvalueに入れる
                     dict_key = column+"_"+str(label)
                     auc_dict[dict_key]=auc
                     areas_dict[dict_key]=areas
-                    #AUCの表示とプロットの表示
-                    if dataset_type=="train":
-                        print(f"TPCoverage AUC of train data {column} by {by_column} {label}:{auc}")
-                    else:
-                        print(f"TPCoverage AUC of test data {column} by {by_column} {label}:{auc}")
                 else:
                     #列名をkey、その列のTPCoverage AUCをvalueに入れる
                     dict_key = column+"_"+str(label)
                     auc = 0
                     auc_dict[dict_key]=auc
                     areas_dict[dict_key]=[0]*100
-                    if dataset_type=="train":
-                        print(f"TPCoverage AUC of train data {column} by {by_column} {label}:{auc}")
-                    else:
-                        print(f"TPCoverage AUC of test data {column} by {by_column} {label}:{auc}")
+                #AUCの表示とプロットの表示
+                if dataset_type=="train":
+                    print(f"TPCoverage AUC of train data {column} by {by_column} {label}:{auc}")
+                else:
+                    print(f"TPCoverage AUC of test data {column} by {by_column} {label}:{auc}")
             if dataset_type=="train":
                 plot_csv_train_tpcoverage(areas_dict,label_list,column,by_column,)
             else:
                 plot_csv_test_tpcoverage(areas_dict,label_list,column,by_column,)
-        
-        
-        
-        
     return auc_dict, min_value_dict, max_value_dict
 
 
-# In[ ]:
+# In[17]:
+
+
+def calculate_tpcoverage_variation_and_auc(column_data,kde_bandwidth):
+    """
+    KDEを行い、データの分布を出して、TPCoverageの変化とそのAUCを計算する関数。
+    """
+    #KDEの設定
+    kde = gaussian_kde(column_data, bw_method=kde_bandwidth)
+    #範囲の設定
+    x_range = np.linspace(column_data.min(),column_data.max(),1000)
+    #密度を計算
+    density = kde(x_range)
+    #もっとも密度が高い場所の設定
+    peak_x = x_range[np.argmax(density)]
+    p_values = np.linspace(0,1,100)
+    #TPCoverageの変化をリストに保存
+    areas = [calculate_tpcoverage(p,x_range,density,peak_x) for p in p_values]
+    #TPCoverageの変化曲線のAUCを計算
+    auc = simpson(y=areas,x=p_values)
+    return auc, areas
+
+
+# In[18]:
 
 
 @log(logger)
@@ -773,7 +775,7 @@ def plot_csv_test_tpcoverage(areas_dict,label_list,column_name,by_column,min_val
     return file_path
 
 
-# In[ ]:
+# In[19]:
 
 
 @log(logger)
@@ -796,7 +798,7 @@ def calculate_tpcoverage(p,x_range,density,peak_x):
     return area
 
 
-# In[ ]:
+# In[20]:
 
 
 @log(logger)
@@ -826,7 +828,7 @@ def output_measure_test_auc(auc_dict,columns_list,label_list):
     return np.array(auc_list)
 
 
-# In[ ]:
+# In[21]:
 
 
 @log(logger)
@@ -890,7 +892,7 @@ def test_tpcoverage_auc_table(auc_dict,columns_list,label_list,by_column,min_val
     return file_path
 
 
-# In[ ]:
+# In[22]:
 
 
 @log(logger)
@@ -903,7 +905,7 @@ def move_log(file_path: str=None) -> str:
 
 # [required]
 
-# In[ ]:
+# In[23]:
 
 
 @log(logger)
@@ -1027,7 +1029,6 @@ def main() -> None:
         group_column = ait_input.get_method_param_value('group_column')
         by_column = group_column.strip()
         if pd.api.types.is_numeric_dtype(train_data[by_column]):
-            label_list=[1,2,3,4,5]
             num_group = ait_input.get_method_param_value('num_group')
             label_list = list(range(num_group))
             train_data["group"] = pd.cut(train_data[by_column],bins=num_group,labels=label_list)
@@ -1053,7 +1054,7 @@ def main() -> None:
 
 # [uneditable]
 
-# In[ ]:
+# In[24]:
 
 
 if __name__ == '__main__':
@@ -1064,7 +1065,7 @@ if __name__ == '__main__':
 
 # [required]
 
-# In[ ]:
+# In[25]:
 
 
 ait_owner='AIST'
@@ -1075,7 +1076,7 @@ ait_creation_year='2024'
 
 # [uneditable] 
 
-# In[ ]:
+# In[26]:
 
 
 if not is_ait_launch:

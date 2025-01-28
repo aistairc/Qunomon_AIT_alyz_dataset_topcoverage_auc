@@ -92,7 +92,8 @@
       "name": "num_group",
       "type": "int",
       "description": "テーブルデータセットの評価を行う場合、入力された数だけ組分けを行う。",
-      "default_val": "5"
+      "default_val": "5",
+      "depends_on_parameter": "group_column"
     }
   ],
   "report": {
